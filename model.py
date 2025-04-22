@@ -71,7 +71,7 @@ class CNNtoRNN(nn.Module):
                 prediction = output.argmax(1)
                 result_captions.append(prediction.item())
                 x = self.decoderRNN.embed(prediction).unsqueeze(0)
-                if vocabulary.itos[prediction.item()] == "<EOS>":
+                if vocabulary.itos[prediction.item()] == "<END>":
                     break
         return [vocabulary.itos[x] for x in result_captions]
 
