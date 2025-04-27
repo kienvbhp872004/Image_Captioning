@@ -4,7 +4,7 @@ nltk.download('punkt')
 class Vocabulary:
     def __init__(self, freq_threshold=5):
         self.freq_threshold = freq_threshold
-        self.itos = {0: "<PAD>", 1: "<START>", 2: "<END>", 3: "<UNK>"}
+        self.itos = {0: "<PAD>", 1: "<SOS>", 2: "<EOS>", 3: "<UNK>"}
         self.stoi = {v: k for k, v in self.itos.items()}
 
     def __len__(self):

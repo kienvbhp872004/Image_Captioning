@@ -3,7 +3,6 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 import pandas as pd
-from torchvision import transforms
 from vocab import Vocabulary
 import nltk
 nltk.data.path = ['C:\\Users\\admin\\nltk_data']
@@ -34,8 +33,8 @@ class FlickrDataset(Dataset):
             image = self.transform(image)
 
         caption = self.captions[idx]
-        numericalized = [self.vocab.stoi["<START>"]]
+        numericalized = [self.vocab.stoi["<SOS>"]]
         numericalized += self.vocab.numericalize(caption)
-        numericalized.append(self.vocab.stoi["<END>"])
+        numericalized.append(self.vocab.stoi["<EOS>"])
 
         return image, torch.tensor(numericalized)
