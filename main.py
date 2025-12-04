@@ -2,11 +2,9 @@ from config import Config
 from models.encoder_multimodal import MultiModalEncoder
 from models.decoder_transformer import TransformerDecoder
 from models.caption_model import CaptionModel
-from train.trainer import Trainer
 from datasets.flickr8k_dataset import Flickr8kDataset, collate_fn
 from utils.vocabulary import Vocabulary
-
-
+from train.trainer import Trainer
 from torch.utils.data import DataLoader
 
 
@@ -21,7 +19,7 @@ def build_vocab(captions_file, min_freq=5):
 
     with open(captions_file, "r") as f:
         for line in f:
-            _, caption = line.strip().split("\t")
+            _, caption = line.strip().split("	")
             for w in caption.lower().split():
                 word_freq[w] = word_freq.get(w, 0) + 1
 
@@ -49,7 +47,6 @@ def create_dataloader(cfg):
         collate_fn=collate_fn
     )
     return loader, vocab
-
 
 
 def main():

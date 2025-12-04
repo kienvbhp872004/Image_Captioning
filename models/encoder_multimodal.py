@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
-
+from encoder_global import GlobalEncoder
+from encoder_region import RegionEncoder
 class MultiModalEncoder(nn.Module):
     def __init__(self, embed_size, tag_vocab_size):
         super().__init__()
-        from .encoder_global import GlobalEncoder
-        from .encoder_region import RegionEncoder
+
 
         self.global_encoder = GlobalEncoder(embed_size)
         self.region_encoder = RegionEncoder(embed_size)

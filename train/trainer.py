@@ -11,7 +11,9 @@ class Trainer:
     def train_epoch(self, epoch):
         self.model.train()
         total_loss = 0
-        for images, captions in self.dataloader:
+        from tqdm import tqdm
+
+        for images, captions in tqdm(self.dataloader, desc=f"Epoch {epoch}"):
             images = images.to(self.cfg.device)
             captions = captions.to(self.cfg.device)
 

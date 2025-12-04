@@ -7,8 +7,8 @@ class Config:
     vocab_path = "saved/vocab.pkl"
 
     # Paths
-    image_dir = "data/images"
-    caption_path = "data/captions.json"
+    image_dir = "data/Images"
+    caption_path = "data/captions.txt"
 
     # Training
     batch_size = 32
