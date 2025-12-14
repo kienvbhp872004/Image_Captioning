@@ -9,9 +9,9 @@ class Config:
     # Paths
     image_dir = "data/Images"
     caption_path = "data/captions.txt"
-
+    feature_dir = "data/features"
     # Training
-    batch_size = 32
+    batch_size = 64
     lr = 1e-4
     num_epochs = 20
 

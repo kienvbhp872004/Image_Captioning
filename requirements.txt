@@ -14,7 +14,6 @@ nltk
 
 # --- Data utils ---
 pandas
-
 # --- Utils ---
 pyyaml
 

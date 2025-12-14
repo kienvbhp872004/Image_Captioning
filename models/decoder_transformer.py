@@ -19,11 +19,18 @@ class TransformerDecoder(nn.Module):
         self.fc_out = nn.Linear(embed_size, vocab_size)
 
     def forward(self, memory, captions):
+        """
+        memory: Tensor (N, S, E)  -- batch-first encoder outputs (padded)
+        captions: Tensor (N, T)   -- token ids, batch-first
+        returns: (N, T, vocab_size)
+        """
         seq_len = captions.size(1)
-        positions = torch.arange(seq_len, device=captions.device).unsqueeze(0)
+        positions = torch.arange(seq_len, device=captions.device, dtype=torch.long).unsqueeze(0)  # (1, T)
 
-        tgt = self.word_embed(captions) + self.pos_embed(positions)
-        mask = nn.Transformer.generate_square_subsequent_mask(seq_len).to(captions.device)
+        tgt = self.word_embed(captions) + self.pos_embed(positions)  # (N, T, E) broadcast pos to batch
+        mask = nn.Transformer.generate_square_subsequent_mask(seq_len).to(captions.device)  # (T, T)
 
-        out = self.transformer(tgt, memory.unsqueeze(0), tgt_mask=mask)
-        return self.fc_out(out)
+        # --- sửa: truyền memory trực tiếp (đã là (N, S, E)) ---
+        out = self.transformer(tgt, memory, tgt_mask=mask)
+
+        return self.fc_out(out)  # (N, T, vocab_size)

@@ -1,6 +1,6 @@
 from config import Config
-from models.encoder_multimodal import MultiModalEncoder
 from models.decoder_transformer import TransformerDecoder
+from models.encoder_global import GlobalEncoder
 from models.caption_model import CaptionModel
 from datasets.flickr8k_dataset import Flickr8kDataset, collate_fn
 from utils.vocabulary import Vocabulary
@@ -17,17 +17,33 @@ def build_vocab(captions_file, min_freq=5):
 
     word_freq = {}
 
-    with open(captions_file, "r") as f:
-        for line in f:
-            _, caption = line.strip().split("	")
-            for w in caption.lower().split():
+    with open(captions_file, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+        # Bỏ dòng đầu (header: image,caption)
+        lines = lines[1:]
+
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+
+            # Chia bằng dấu phẩy đầu tiên
+            filename, caption = line.split(",", 1)
+
+            caption = caption.strip().lower()
+
+            # Đếm tần suất từ
+            for w in caption.split():
                 word_freq[w] = word_freq.get(w, 0) + 1
 
+    # Thêm từ vào vocab
     for w, c in word_freq.items():
         if c >= min_freq:
             vocab.add_word(w)
 
     return vocab
+
 
 
 def create_dataloader(cfg):
@@ -37,9 +53,9 @@ def create_dataloader(cfg):
     dataset = Flickr8kDataset(
         image_root=cfg.image_dir,
         captions_file=cfg.caption_path,
-        vocab=vocab
+        vocab=vocab,
     )
-
+    print(dataset.__len__())
     loader = DataLoader(
         dataset,
         batch_size=cfg.batch_size,
@@ -55,7 +71,7 @@ def main():
     dataloader, vocab = create_dataloader(cfg)
     cfg.vocab_size = len(vocab)
 
-    encoder = MultiModalEncoder(cfg.embed_size, tag_vocab_size=200)
+    encoder = GlobalEncoder(cfg.embed_size)
     decoder = TransformerDecoder(cfg.vocab_size, cfg.embed_size, cfg.num_heads, cfg.num_layers)
     model = CaptionModel(encoder, decoder).to(cfg.device)
 
@@ -64,7 +80,6 @@ def main():
     for epoch in range(cfg.num_epochs):
         loss = trainer.train_epoch(epoch)
         print(f"Epoch {epoch} - Loss: {loss:.4f}")
-
 
 if __name__ == "__main__":
     main()

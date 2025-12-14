@@ -5,7 +5,8 @@ class Vocabulary:
         self.word2idx = {}
         self.idx2word = {}
         self.idx = 0
-
+    def __len__(self):
+        return len(self.word2idx)
     def add_word(self, word):
         if word not in self.word2idx:
             self.word2idx[word] = self.idx
