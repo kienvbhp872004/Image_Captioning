@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch
+import os
 from .encoder_global import  GlobalEncoder
 from .decoder_transformer import TransformerDecoder
 class CaptionModel(nn.Module):
@@ -69,6 +70,9 @@ class CaptionModel(nn.Module):
             caption = ' '.join(caption_words)
 
         return caption
-    def save(self, path = "saved/model"):
+
+    def save(self, save_dir = "save/model", epoch = 0):
+        os.makedirs(save_dir, exist_ok=True)
+        path = os.path.join(save_dir, f"Model_epoch_{epoch}.pth")
         torch.save(self.state_dict(), path)
 

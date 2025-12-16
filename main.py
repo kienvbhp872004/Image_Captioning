@@ -75,7 +75,7 @@ def main():
 
     for epoch in range(cfg.num_epochs):
         loss = trainer.train_epoch(epoch)
-        model._save_to_state_dict("saved/model")
+        model.save("saved/model",epoch=epoch)
         print(f"Epoch {epoch} - Loss: {loss:.4f}")
 
 if __name__ == "__main__":
