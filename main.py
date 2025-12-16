@@ -1,12 +1,10 @@
 from config import Config
-from models.decoder_transformer import TransformerDecoder
-from models.encoder_global import GlobalEncoder
 from models.caption_model import CaptionModel
 from datasets.flickr8k_dataset import Flickr8kDataset
 from utils.vocabulary import Vocabulary
 from train.trainer import Trainer
 from torch.utils.data import DataLoader
-
+import os
 
 def build_vocab(captions_file, min_freq=5):
     vocab = Vocabulary()
@@ -46,13 +44,20 @@ def build_vocab(captions_file, min_freq=5):
 
 
 
-def create_dataloader(cfg):
-    vocab = build_vocab(cfg.caption_path)
+def create_dataloader(cfg,is_kaggle=False):
+    path_dir = ""
+    if is_kaggle:
+        path_dir ="/kaggle/input/flickr8k"
+    path_image = os.path.join(path_dir, cfg.image_dir)
+    path_caption = os.path.join(path_dir, cfg.caption_path)
+    print(path_caption)
+    print(path_image)
+    vocab = build_vocab(path_caption)
     vocab.save(cfg.vocab_path)
 
     dataset = Flickr8kDataset(
-        image_root=cfg.image_dir,
-        captions_file=cfg.caption_path,
+        image_root=path_image,
+        captions_file=path_caption,
         vocab=vocab,
     )
     print(dataset.__len__())
