@@ -2,7 +2,7 @@ from config import Config
 from models.decoder_transformer import TransformerDecoder
 from models.encoder_global import GlobalEncoder
 from models.caption_model import CaptionModel
-from datasets.flickr8k_dataset import Flickr8kDataset, collate_fn
+from datasets.flickr8k_dataset import Flickr8kDataset
 from utils.vocabulary import Vocabulary
 from train.trainer import Trainer
 from torch.utils.data import DataLoader
@@ -60,7 +60,6 @@ def create_dataloader(cfg):
         dataset,
         batch_size=cfg.batch_size,
         shuffle=True,
-        collate_fn=collate_fn
     )
     return loader, vocab
 
@@ -71,14 +70,12 @@ def main():
     dataloader, vocab = create_dataloader(cfg)
     cfg.vocab_size = len(vocab)
 
-    encoder = GlobalEncoder(cfg.embed_size)
-    decoder = TransformerDecoder(cfg.vocab_size, cfg.embed_size, cfg.num_heads, cfg.num_layers)
-    model = CaptionModel(encoder, decoder).to(cfg.device)
-
-    trainer = Trainer(model, dataloader, cfg)
+    model = CaptionModel(cfg.vocab_size,cfg.embed_size,cfg.num_heads,cfg.num_layers).to(cfg.device)
+    trainer = Trainer(model, dataloader,cfg,vocab)
 
     for epoch in range(cfg.num_epochs):
         loss = trainer.train_epoch(epoch)
+        model._save_to_state_dict("saved/model")
         print(f"Epoch {epoch} - Loss: {loss:.4f}")
 
 if __name__ == "__main__":

@@ -19,7 +19,7 @@ class GlobalEncoder(nn.Module):
 
     def forward(self, image):
         with torch.no_grad():
-            feat = self.resnet(image).squeeze()
+            feat = self.resnet(image)
         features = self.adaptive_pool(feat)  # [B, 2048, 7, 7]
         batch_size = features.size(0)
         features = features.permute(0, 2, 3, 1)  # [B, 7, 7, 2048]
@@ -30,4 +30,3 @@ class GlobalEncoder(nn.Module):
 
         return features
 
-        return self.fc(feat)

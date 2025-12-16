@@ -13,10 +13,11 @@ class Flickr8kDataset(Dataset):
     - Nếu feature_root không cung cấp, dataset trả image tensor như trước.
     """
 
-    def __init__(self, image_root, captions_file, vocab=None, transform=None):
+    def __init__(self, image_root, captions_file, vocab=None, transform=None,max_len = 50):
         self.image_root = image_root
         self.transform = transform or get_transforms()
         self.vocab = vocab
+        self.max_len = max_len
 
         self.data = []
         with open(captions_file, "r", encoding="utf-8") as f:
@@ -62,37 +63,16 @@ class Flickr8kDataset(Dataset):
         image = Image.open(img_path).convert("RGB")
         image = self.transform(image)
 
-        tokens = ["<start>"] + caption.split(" ") + ["<end>"]
-        caption_ids = [
-            self.vocab.word2idx.get(w, self.vocab.word2idx["<unk>"])
-            for w in tokens
-        ]
+        numerical = [self.vocab.word2idx["<start>"]]
+        numerical += self.vocab.numericalize(caption)
+        numerical.append(self.vocab.word2idx["<end>"])
 
-        # trả kèm img_filename (dùng làm key khi cache)
-        return image, caption_ids
+        if len(numerical) < self.max_len:
+            numerical += [self.vocab.word2idx["<pad>"]] * (self.max_len - len(numerical))
+        else:
+            numerical = numerical[:self.max_len]
+
+        return image, torch.tensor(numerical)
 
 
-def collate_fn(batch):
-    """
-    Collate cho batch khi dataset trả image hoặc precomputed features.
-    - Hỗ trợ 2 dạng batch element:
-      a) (image_tensor, caption_ids, img_filename)
-      b) (res_feat, region_feat, caption_ids, img_filename)
-    """
-    # detect format by length of element
-    if len(batch[0]) == 2:
-        # format a)
-        images, captions = zip(*batch)
-        images = torch.stack(images)
 
-        lengths = [len(c) for c in captions]
-        max_len = max(lengths)
-
-        padded = torch.zeros(len(captions), max_len).long()
-        for i, cap in enumerate(captions):
-            padded[i, :len(cap)] = torch.tensor(cap)
-
-        return images, padded
-
-    else:
-        raise ValueError(f"Expected batch of length 2, but got {len(batch[0])}")
