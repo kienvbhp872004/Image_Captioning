@@ -50,8 +50,6 @@ def create_dataloader(cfg,is_kaggle=False):
         path_dir ="/kaggle/input/flickr8k"
     path_image = os.path.join(path_dir, cfg.image_dir)
     path_caption = os.path.join(path_dir, cfg.caption_path)
-    print(path_caption)
-    print(path_image)
     vocab = build_vocab(path_caption)
     vocab.save(cfg.vocab_path)
 

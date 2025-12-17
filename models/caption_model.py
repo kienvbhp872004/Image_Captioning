@@ -32,7 +32,7 @@ class CaptionModel(nn.Module):
         outputs = self.decoder(encoder_out, captions, caption_mask)
         return outputs
 
-    def generate_caption(self, image, vocab, max_len=50, device='cpu'):
+    def generate_caption(self, image, vocab, max_len=50, device='cuda'):
         """
         Greedy decoding để generate caption
         Args:
@@ -49,7 +49,7 @@ class CaptionModel(nn.Module):
             encoder_out = self.encoder(image)
 
             # Start with <SOS> token
-            caption_ids = [vocab.word2idx["<end>"]]
+            caption_ids = [vocab.word2idx["<start>"]]
 
             for _ in range(max_len):
                 captions = torch.LongTensor([caption_ids]).to(device)
@@ -62,13 +62,13 @@ class CaptionModel(nn.Module):
                 caption_ids.append(predicted)
 
                 # Stop if <EOS> is generated
-                if predicted == vocab.stoi["<EOS>"]:
+                if predicted == vocab.word2idx["<end>"]:
                     break
 
             # Convert ids to words
-            caption_words = [vocab.itos[idx] for idx in caption_ids[1:-1]]  # Skip <SOS> and <EOS>
+            caption_words = [vocab.idx2word[idx] for idx in caption_ids[1:-1]]  # Skip <SOS> and <EOS>
             caption = ' '.join(caption_words)
-
+        print(caption)
         return caption
 
     def save(self, save_dir = "save/model", epoch = 0):
