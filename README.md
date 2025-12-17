@@ -1,146 +1,132 @@
-🖼️ Image Captioning with Transformer (Flickr8k)
-1. Giới thiệu
+Chào bạn, đây là bản thiết kế lại nội dung của bạn dưới dạng **Markdown chuyên nghiệp**, tối ưu cho file `README.md` trên GitHub. Mình đã thêm các icon, định dạng bảng và cấu trúc rõ ràng để người xem dễ theo dõi hơn.
 
-Project này xây dựng hệ thống Image Captioning – sinh mô tả ngôn ngữ tự nhiên cho ảnh – dựa trên kiến trúc Encoder–Decoder với Transformer, huấn luyện và đánh giá trên dataset Flickr8k.
+---
 
-Ứng dụng cho phép:
+# 🖼️ Image Captioning với Transformer (Flickr8k)
 
-Load ảnh bất kỳ
+Dự án này xây dựng hệ thống **Image Captioning** – tự động sinh mô tả ngôn ngữ tự nhiên cho hình ảnh – dựa trên kiến trúc **Encoder–Decoder với Transformer**. Mô hình được huấn luyện và đánh giá trên bộ dữ liệu chuẩn **Flickr8k**.
 
-Sinh caption bằng Beam Search
+## 🌟 Tính năng nổi bật
 
-Chạy bằng GUI (Tkinter) hoặc inference bằng code
+* **Kiến trúc hiện đại:** Kết hợp sức mạnh của CNN (Trích xuất đặc trưng) và Transformer (Xử lý ngôn ngữ).
+* **Giải thuật tối ưu:** Sử dụng **Beam Search** để tăng độ chính xác và tính tự nhiên cho câu mô tả.
+* **Giao diện thân thiện:** Tích hợp GUI bằng **Tkinter** cho phép upload ảnh và xem kết quả trực quan.
+* **Dễ dàng mở rộng:** Cấu trúc code modular, dễ dàng thay đổi bộ Encoder hoặc Dataset khác.
 
-2. Cấu trúc thư mục
+---
+
+## 📂 Cấu trúc thư mục
+
+```text
 .
-├── models/                 # Encoder, Decoder, CaptionModel
-├── datasets/               # Flickr8kDataset, transforms
-├── train/                  # Trainer, training loop
-├── utils/                  # Vocabulary, preprocessing
-├── saved/model/             # Model đã train (.pth)
-├── sample/                 # Ảnh test
-├── caption_gui_app.py       # Ứng dụng GUI
-├── requirements.txt
-├── README.md
-└── config.py
+├── models/             # Định nghĩa kiến trúc Encoder, Decoder, CaptionModel
+├── datasets/           # Xử lý Flickr8kDataset và Data Transforms
+├── train/              # Script huấn luyện và vòng lặp Training (Trainer)
+├── utils/              # Xử lý Vocabulary, Tokenization, Preprocessing
+├── saved/model/        # Lưu trữ trọng số mô hình đã huấn luyện (.pth)
+├── sample/             # Hình ảnh mẫu để chạy thử nghiệm
+├── caption_gui_app.py  # Ứng dụng giao diện người dùng (GUI)
+├── requirements.txt    # Danh sách thư viện cần thiết
+├── README.md           # Hướng dẫn dự án
+└── config.py           # Các tham số cấu hình (Hyperparameters)
 
-3. Kích hoạt môi trường ảo
-🔹 Tạo môi trường ảo
+```
+
+---
+
+## 🚀 Hướng dẫn cài đặt
+
+### 1. Khởi tạo môi trường ảo
+
+```bash
+# Tạo môi trường ảo
 python -m venv venv
 
-🔹 Kích hoạt
-
-Windows
-
+# Kích hoạt (Windows)
 venv\Scripts\activate
 
-
-Linux / macOS
-
+# Kích hoạt (Linux / macOS)
 source venv/bin/activate
 
-4. Cài đặt thư viện
-🔹 Cài từ requirements.txt
+```
+
+### 2. Cài đặt thư viện
+
+```bash
 pip install -r requirements.txt
 
-🔹 requirements.txt (tối thiểu)
-torch
-torchvision
-Pillow
-tqdm
-nltk
+```
 
+> **Lưu ý:** Nếu bạn sử dụng GPU, hãy cài đặt phiên bản PyTorch phù hợp tại [pytorch.org](https://pytorch.org/get-started/locally/).
 
-⚠️ Với GPU CUDA, cài PyTorch theo hướng dẫn tại:
-https://pytorch.org/get-started/locally/
+### 3. Tải bộ dữ liệu Flickr8k
 
-5. Tải dataset Flickr8k
-🔹 Cách khuyến nghị: Kaggle API
-Cài Kaggle
+Bạn có thể tải nhanh thông qua Kaggle API:
+
+```bash
 pip install kaggle
-
-Tải dataset
 kaggle datasets download -d adityajn105/flickr8k
 unzip flickr8k.zip -d data/flickr8k
 
+```
 
-📁 Cấu trúc sau khi giải nén:
+Cấu trúc dữ liệu yêu cầu:
 
+```text
 data/flickr8k/
-├── Images/
-├── captions.txt
+├── Images/       # Chứa 8,000 ảnh
+└── captions.txt  # File chứa caption tương ứng
 
-6. Chuẩn bị tài nguyên NLP (NLTK)
+```
 
-Project sử dụng NLTK để tokenize caption.
+### 4. Chuẩn bị tài nguyên NLP
 
+Tải bộ tokenizer cần thiết cho NLTK:
+
+```bash
 python -m nltk.downloader punkt
 
-7. Chạy ứng dụng GUI
+```
+
+---
+
+## 🛠️ Kiến trúc mô hình
+
+Mô hình hoạt động theo quy trình khép kín:
+
+1. **Encoder:** Sử dụng một mạng CNN (như ResNet hoặc EfficientNet) để trích xuất các vector đặc trưng (feature vector) từ ảnh đầu vào.
+2. **Decoder (Transformer):** Nhận vector đặc trưng làm đầu vào "memory" và sử dụng cơ chế **Self-Attention** để dự đoán từng từ trong chuỗi mô tả.
+
+| Thành phần | Công nghệ sử dụng |
+| --- | --- |
+| **Framework** | PyTorch |
+| **Vision** | Torchvision (Pretrained CNN) |
+| **NLP** | Transformer Decoder + NLTK |
+| **Decoding Strategy** | Beam Search (K=3, 5) |
+| **Loss Function** | Cross Entropy Loss |
+
+---
+
+## 💻 Hướng dẫn sử dụng
+
+### Chạy ứng dụng GUI
+
+Để trải nghiệm việc sinh caption với giao diện trực quan, hãy chạy:
+
+```bash
 python caption_gui_app.py
 
-Chức năng:
+```
 
-Upload ảnh
+* **Bước 1:** Nhấn nút **Upload Image**.
+* **Bước 2:** Chờ mô hình xử lý bằng thuật toán **Beam Search**.
+* **Bước 3:** Kết quả caption sẽ hiển thị ngay bên dưới ảnh.
 
-Hiển thị ảnh
+---
 
-Sinh caption bằng Beam Search
+## 📊 Đánh giá & Kết quả
 
-8. Mô tả kiến trúc mô hình
-🔹 Encoder
+* **Greedy Search:** Sinh từ nhanh nhưng đôi khi bị lặp hoặc cụt ngủn.
+* **Beam Search:** Duy trì nhiều ứng viên câu cùng lúc (K câu tốt nhất), giúp câu văn mượt mà và giàu ngữ nghĩa hơn.
+* **Loss:** Mô hình được tối ưu hóa bằng Cross Entropy, giúp hội tụ nhanh sau khoảng 10-20 epochs trên Flickr8k.
 
-Sử dụng CNN pretrained (hoặc embedding layer)
-
-Trích xuất đặc trưng ảnh
-
-🔹 Decoder
-
-Transformer Decoder
-
-Sinh chuỗi từ dựa trên:
-
-Feature ảnh
-
-Các từ đã sinh trước đó
-
-🔹 Quy trình
-Image → Encoder → Feature Vector
-       ↓
-   Transformer Decoder → Caption
-
-9. Beam Search Decoding
-
-Thay vì Greedy Search, project sử dụng Beam Search để cải thiện chất lượng caption.
-
-Giữ lại K câu ứng viên tốt nhất
-
-Chọn câu có log-probability cao nhất
-
-Ưu điểm:
-
-Caption tự nhiên hơn
-
-Ít lỗi ngữ nghĩa
-
-10. Loss Function
-
-Cross Entropy Loss
-
-Dự đoán từ tiếp theo dựa trên ground truth
-
-11. Đánh giá mô hình
-
-Quan sát chất lượng caption sinh ra
-
-So sánh Greedy vs Beam Search
-
-Đánh giá định tính (qualitative)
-
-12. Công nghệ sử dụng
-Thành phần	Công nghệ
-Framework	PyTorch
-Vision	Torchvision
-NLP	NLTK
-GUI	Tkinter
-Dataset	Flickr8k
