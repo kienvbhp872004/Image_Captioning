@@ -73,7 +73,7 @@ unzip flickr8k.zip -d data/flickr8k
 Cấu trúc dữ liệu yêu cầu:
 
 ```text
-data/flickr8k/
+data/
 ├── Images/       # Chứa 8,000 ảnh
 └── captions.txt  # File chứa caption tương ứng
 
@@ -114,7 +114,7 @@ Mô hình hoạt động theo quy trình khép kín:
 Để trải nghiệm việc sinh caption với giao diện trực quan, hãy chạy:
 
 ```bash
-python caption_gui_app.py
+python caption_app.py
 
 ```
 
