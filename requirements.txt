@@ -1,22 +1,5 @@
-# --- PyTorch GPU (CUDA 11.8) ---
+Pillow==12.0.0
 torch==2.2.0+cu118
 torchvision==0.17.0+cu118
-torchaudio==2.2.0+cu118
---extra-index-url https://download.pytorch.org/whl/cu118
-
-# --- Image processing ---
-Pillow
-opencv-python
-
-# --- NLP / Text ---
-tqdm
+tqdm==4.67.1
 nltk
-
-# --- Data utils ---
-pandas
-# --- Utils ---
-pyyaml
-
-# --- Optional: debugging, visualization ---
-matplotlib
-scikit-learn
