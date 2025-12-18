@@ -1,4 +1,5 @@
 from config import Config
+from datasets.flickr30k_dataset import Flickr30kDataset
 from models.caption_model import CaptionModel
 from datasets.flickr8k_dataset import Flickr8kDataset
 from utils.vocabulary import Vocabulary
@@ -27,7 +28,10 @@ def build_vocab(captions_file, min_freq=5):
                 continue
 
             # Chia bằng dấu phẩy đầu tiên
-            filename, caption = line.split(",", 1)
+            parts = line.strip().split(",")
+
+            filename = parts[0]
+            caption = parts[-1].strip().lower()
 
             caption = caption.strip().lower()
 
@@ -44,20 +48,18 @@ def build_vocab(captions_file, min_freq=5):
 
 
 
-def create_dataloader(cfg,is_kaggle=False):
-    path_dir = ""
+def create_dataloader(cfg,is_kaggle=False,name_dataset="flickr8k"):
+    path_dir = "data"
     if is_kaggle:
         path_dir ="/kaggle/input/flickr8k"
-    path_image = os.path.join(path_dir, cfg.image_dir)
-    path_caption = os.path.join(path_dir, cfg.caption_path)
+    path_image = os.path.join(path_dir,name_dataset ,cfg.image_dir)
+    path_caption = os.path.join(path_dir,name_dataset, cfg.caption_path)
     vocab = build_vocab(path_caption)
     vocab.save(cfg.vocab_path)
-
-    dataset = Flickr8kDataset(
-        image_root=path_image,
-        captions_file=path_caption,
-        vocab=vocab,
-    )
+    if name_dataset == "flickr8k":
+        dataset = Flickr8kDataset(path_image,path_caption,vocab)
+    elif name_dataset == "flickr30k":
+        dataset = Flickr30kDataset(path_image,path_caption,vocab)
     print(dataset.__len__())
     loader = DataLoader(
         dataset,

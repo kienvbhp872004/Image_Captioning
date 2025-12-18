@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 from .transforms import get_transforms
 import torch
 
-class Flickr8kDataset(Dataset):
+class Flickr30kDataset(Dataset):
     """
     Dataset cho Flickr8k captions.
     - Nếu feature_root được cung cấp, dataset sẽ trả (resnet_feat, region_feat, caption_ids, img_filename)
