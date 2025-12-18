@@ -25,7 +25,7 @@ Dự án này xây dựng hệ thống **Image Captioning** – tự động sin
 ├── utils/              # Xử lý Vocabulary, Tokenization, Preprocessing
 ├── saved/model/        # Lưu trữ trọng số mô hình đã huấn luyện (.pth)
 ├── sample/             # Hình ảnh mẫu để chạy thử nghiệm
-├── caption_gui_app.py  # Ứng dụng giao diện người dùng (GUI)
+├── caption_app.py  # Ứng dụng giao diện người dùng (GUI)
 ├── requirements.txt    # Danh sách thư viện cần thiết
 ├── README.md           # Hướng dẫn dự án
 └── config.py           # Các tham số cấu hình (Hyperparameters)
