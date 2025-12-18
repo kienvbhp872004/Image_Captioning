@@ -39,10 +39,10 @@ class Flickr30kDataset(Dataset):
             if "\t" in line:
                 img_id, caption = line.split("\t", 1)
             else:
-                parts = line.split(",", 1)
+                parts = line.strip().split(",")
                 if len(parts) < 2:
                     continue
-                img_id, caption = parts
+                img_id, caption = parts[0],parts[-11]
 
             img_filename = img_id.split("#")[0]
             caption = caption.lower().strip()
